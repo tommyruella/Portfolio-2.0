@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 
 interface Project {
@@ -90,19 +89,17 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({
 
   return (
     <div className="w-full max-w-[1200px] mx-auto bg-white relative overflow-hidden">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-medium tracking-tight">
-          Featured Projects
-        </h2>
+      <div className="flex justify-between items-center mb-10">
+        <h2 className="text-3xl font-medium tracking-tight">Featured Work</h2>
         <Link
           to="/featured"
-          className="text-sm flex items-center gap-1 text-gray-600 hover:text-black transition-colors"
+          className="text-sm flex items-center gap-1 text-gray-600 hover:text-black transition-colors font-medium"
         >
           View all <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
 
-      <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg bg-gray-50">
+      <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl bg-gray-50">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -110,61 +107,24 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="absolute inset-0 flex flex-col md:flex-row items-center"
+            className="absolute inset-0"
           >
-            <div className="w-full md:w-1/2 h-full relative">
+            <div className="w-full h-full relative">
               <img
                 src={featuredProjects[currentIndex].thumbnail}
                 alt={featuredProjects[currentIndex].title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent md:hidden" />
-            </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center bg-white md:bg-transparent">
-              <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">
-                {featuredProjects[currentIndex].category}
-              </p>
-              <h3 className="text-xl md:text-2xl font-medium mb-3">
-                {featuredProjects[currentIndex].title}
-              </h3>
-              <p className="text-sm text-gray-600 line-clamp-3 md:line-clamp-4">
-                {featuredProjects[currentIndex].description}
-              </p>
-              <Button variant="outline" size="sm" className="mt-4 self-start">
-                View Project
-              </Button>
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <h3 className="text-xl md:text-2xl font-medium">
+                  {featuredProjects[currentIndex].title}
+                </h3>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
-
-        {/* Navigation Controls */}
-        <div className="absolute bottom-4 right-4 flex items-center gap-1 z-10">
-          {featuredProjects.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => handleDotClick(index)}
-              className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? "bg-white w-4" : "bg-white/50"}`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        <button
-          onClick={handlePrevious}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 p-1.5 rounded-full shadow-sm hover:bg-white transition-colors z-10"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-
-        <button
-          onClick={handleNext}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 p-1.5 rounded-full shadow-sm hover:bg-white transition-colors z-10"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
       </div>
     </div>
   );

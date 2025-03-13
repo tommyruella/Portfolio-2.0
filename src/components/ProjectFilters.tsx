@@ -70,7 +70,7 @@ const ProjectFilters = ({
   };
 
   return (
-    <div className="w-full bg-white p-4 mb-8 border-b">
+    <div className="w-full bg-white p-6 mb-12 border-b border-gray-100">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />

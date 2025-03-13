@@ -53,7 +53,7 @@ const FeaturedProjectsPage: React.FC = () => {
       </motion.div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 px-4">
+      <footer className="bg-black text-white py-8 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-gray-400">
             © {new Date().getFullYear()} Alex Filmmaker. All rights reserved.

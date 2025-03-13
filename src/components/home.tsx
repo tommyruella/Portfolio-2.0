@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
-import FeaturedProjects from "./FeaturedProjects";
 import ProjectsGallery from "./ProjectsGallery";
-import AboutSection from "./AboutSection";
-import { getFeaturedProjects } from "../lib/projectsData";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import projectsData from "../lib/projectsData";
 
 const Home: React.FC = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const featuredProjects = projectsData.filter((project) => project.isFeatured);
+
+  // Auto-advance slideshow
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % featuredProjects.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [featuredProjects.length]);
+
   // Animation variants for staggered section appearance
   const sectionVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -25,58 +35,66 @@ const Home: React.FC = () => {
       {/* Navigation */}
       <Navbar studentName="Alex Filmmaker" />
 
-      {/* Hero Section */}
+      {/* Hero Section with Slideshow */}
       <motion.section
-        className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+        className="h-screen flex items-center justify-center relative overflow-hidden"
         initial="hidden"
         animate="visible"
         variants={sectionVariants}
       >
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 mb-6">
+        {/* Slideshow Background */}
+        <div className="absolute inset-0 z-0">
+          {featuredProjects.map((project, index) => (
+            <div
+              key={project.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
+            >
+              <img
+                src={project.thumbnailUrl}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50" />
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center relative z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6">
             Cinematic Storytelling
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
             Exploring narratives through the lens of visual composition, light,
             and movement.
           </p>
           <div className="flex justify-center space-x-4">
             <a
               href="#projects"
-              className="px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+              className="px-6 py-3 bg-white text-black rounded-md hover:bg-white/90 transition-colors"
             >
               View Projects
             </a>
-            <a
-              href="#about"
-              className="px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            <Link
+              to="/about"
+              className="px-6 py-3 border border-white text-white rounded-md hover:bg-white/10 transition-colors"
             >
               About Me
-            </a>
+            </Link>
+          </div>
+
+          {/* Slideshow Indicators */}
+          <div className="flex justify-center mt-8 space-x-2">
+            {featuredProjects.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all ${index === currentSlide ? "bg-white w-4" : "bg-white/50"}`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </motion.section>
-
-      {/* Featured Projects Section */}
-      <motion.div
-        id="featured"
-        className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={sectionVariants}
-      >
-        <FeaturedProjects
-          projects={getFeaturedProjects().map((project) => ({
-            id: project.id,
-            title: project.title,
-            category: project.category,
-            description: project.description,
-            thumbnail: project.thumbnailUrl,
-            featured: project.isFeatured,
-          }))}
-        />
-      </motion.div>
 
       {/* Projects Gallery Section */}
       <motion.div
@@ -87,24 +105,36 @@ const Home: React.FC = () => {
         variants={sectionVariants}
       >
         <ProjectsGallery
-          title="Complete Portfolio"
-          description="Explore my full collection of film and video projects across various genres and formats."
+          title="Portfolio"
+          description="Curated selection of cinematic works"
         />
       </motion.div>
 
-      {/* About Section */}
+      {/* About Section Link */}
       <motion.div
-        id="about"
+        className="py-24 text-center bg-black text-white"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={sectionVariants}
       >
-        <AboutSection />
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-4xl font-bold mb-6">The Story Behind the Lens</h2>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+            Discover my creative journey, influences, and vision for visual
+            storytelling.
+          </p>
+          <Link
+            to="/about"
+            className="px-8 py-4 border border-white text-white rounded-md hover:bg-white hover:text-black transition-all duration-300 inline-flex items-center gap-2 text-lg"
+          >
+            About Me
+          </Link>
+        </div>
       </motion.div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4">
+      <footer className="bg-black text-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
@@ -127,9 +157,9 @@ const Home: React.FC = () => {
                 <a href="#" className="text-gray-400 hover:text-white">
                   Vimeo
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white">
-                  LinkedIn
-                </a>
+                <Link to="/about" className="text-gray-400 hover:text-white">
+                  About
+                </Link>
               </div>
             </div>
           </div>

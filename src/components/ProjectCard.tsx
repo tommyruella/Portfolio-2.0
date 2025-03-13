@@ -1,7 +1,4 @@
 import React from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 
 export interface Project {
@@ -26,7 +23,7 @@ const ProjectCard = ({
     category: "Short Film",
     year: 2023,
     thumbnail:
-      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80",
+      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80",
     description: "A sample project description showcasing cinematography work.",
     tags: ["Drama", "Student Film"],
   },
@@ -34,50 +31,27 @@ const ProjectCard = ({
 }: ProjectCardProps) => {
   return (
     <motion.div
-      whileHover={{ y: -5 }}
+      whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
-      className="h-full"
+      className="w-full cursor-pointer"
+      onClick={() => onClick(project)}
     >
-      <Card
-        className="h-full overflow-hidden cursor-pointer bg-white hover:shadow-lg transition-shadow duration-300"
-        onClick={() => onClick(project)}
-      >
-        <CardHeader className="p-0">
-          <div className="relative aspect-[4/3] w-full overflow-hidden">
-            <img
-              src={project.thumbnail}
-              alt={project.title}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-            />
-          </div>
-        </CardHeader>
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="text-lg font-semibold line-clamp-1">
-              {project.title}
-            </h3>
-            <Badge variant="outline" className="text-xs">
-              {project.year}
-            </Badge>
-          </div>
-          <p className="text-sm text-gray-500 mb-2">{project.category}</p>
-          <p className="text-sm line-clamp-2 text-gray-700">
-            {project.description}
+      <div className="relative aspect-video w-full overflow-hidden bg-black">
+        {/* Image */}
+        <img
+          src={project.thumbnail}
+          alt={project.title}
+          className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
+        />
+
+        {/* Hover overlay with minimal info */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 text-white">
+          <h3 className="text-2xl font-medium mb-1">{project.title}</h3>
+          <p className="text-sm text-white/80">
+            {project.category} · {project.year}
           </p>
-        </CardContent>
-        <CardFooter className="p-4 pt-0 flex flex-wrap gap-1">
-          {project.tags.slice(0, 2).map((tag, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-          {project.tags.length > 2 && (
-            <Badge variant="secondary" className="text-xs">
-              +{project.tags.length - 2}
-            </Badge>
-          )}
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 };

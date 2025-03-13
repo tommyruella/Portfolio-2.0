@@ -5,6 +5,7 @@ import routes from "tempo-routes";
 
 // Lazy load pages for better performance
 const FeaturedProjectsPage = lazy(() => import("./pages/FeaturedProjectsPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/featured" element={<FeaturedProjectsPage />} />
+          <Route path="/about" element={<AboutPage />} />
           {import.meta.env.VITE_TEMPO === "true" && (
             <Route path="/tempobook/*" />
           )}

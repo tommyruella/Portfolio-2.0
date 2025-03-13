@@ -11,10 +11,8 @@ const Navbar = ({
   studentName = "Alex Filmmaker",
   links = [
     { label: "Home", href: "/" },
-    { label: "Featured", href: "/featured" },
     { label: "Projects", href: "/#projects" },
-    { label: "About", href: "/#about" },
-    { label: "Contact", href: "/#contact" },
+    { label: "About", href: "/about" },
   ],
 }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -25,12 +23,15 @@ const Navbar = ({
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-sm">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo/Name */}
           <div className="flex-shrink-0">
-            <Link to="/" className="text-xl font-semibold text-gray-900">
+            <Link
+              to="/"
+              className="text-2xl font-bold text-white tracking-tight"
+            >
               {studentName}
             </Link>
           </div>
@@ -43,7 +44,7 @@ const Navbar = ({
                   <Link
                     key={link.label}
                     to={link.href}
-                    className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                    className="text-white hover:text-white/80 px-3 py-2 text-base font-medium transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
                   >
                     {link.label}
                   </Link>
@@ -51,7 +52,7 @@ const Navbar = ({
                   <a
                     key={link.label}
                     href={link.href}
-                    className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                    className="text-white hover:text-white/80 px-3 py-2 text-base font-medium transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
                   >
                     {link.label}
                   </a>
@@ -64,7 +65,7 @@ const Navbar = ({
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white/80 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white/30"
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
@@ -81,13 +82,13 @@ const Navbar = ({
       {/* Mobile menu, show/hide based on menu state */}
       {isMenuOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-black/90 backdrop-blur-md">
             {links.map((link) =>
               link.href.startsWith("/") && !link.href.startsWith("/#") ? (
                 <Link
                   key={link.label}
                   to={link.href}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  className="block px-3 py-4 rounded-md text-base font-medium text-white hover:bg-white/10"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
@@ -96,7 +97,7 @@ const Navbar = ({
                 <a
                   key={link.label}
                   href={link.href}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  className="block px-3 py-4 rounded-md text-base font-medium text-white hover:bg-white/10"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
