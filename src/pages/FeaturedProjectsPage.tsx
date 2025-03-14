@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import FeaturedProjects from "../components/FeaturedProjects";
 import Navbar from "../components/Navbar";
-import { getFeaturedProjects } from "../lib/projectsData";
+import { getProjectsForFeaturedSection } from "../lib/projectsData";
 import { motion } from "framer-motion";
 
 const FeaturedProjectsPage: React.FC = () => {
@@ -31,16 +31,7 @@ const FeaturedProjectsPage: React.FC = () => {
         animate="visible"
         variants={sectionVariants}
       >
-        <FeaturedProjects
-          projects={getFeaturedProjects().map((project) => ({
-            id: project.id,
-            title: project.title,
-            category: project.category,
-            description: project.description,
-            thumbnail: project.thumbnailUrl,
-            featured: project.isFeatured,
-          }))}
-        />
+        <FeaturedProjects projects={getProjectsForFeaturedSection()} />
 
         <div className="flex justify-center mt-12">
           <Link

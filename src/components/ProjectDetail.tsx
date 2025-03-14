@@ -9,47 +9,16 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { X, Calendar, Tag, Clock, User } from "lucide-react";
+import { ProjectDetailType, getProjectDetailById } from "../lib/projectsData";
 
 interface ProjectDetailProps {
-  project?: {
-    id: string;
-    title: string;
-    description: string;
-    longDescription?: string;
-    category: string;
-    year: number;
-    duration?: string;
-    director?: string;
-    thumbnailUrl: string;
-    images: string[];
-    videoUrl?: string;
-    role?: string;
-  };
+  project?: ProjectDetailType;
   isOpen?: boolean;
   onClose?: () => void;
 }
 
 const ProjectDetail = ({
-  project = {
-    id: "1",
-    title: "The Silent Echo",
-    description: "A short film exploring themes of isolation and connection",
-    longDescription:
-      "This experimental short film follows a young woman navigating an increasingly disconnected world. Through visual metaphors and minimal dialogue, the film examines how technology both connects and isolates us from meaningful human interaction.",
-    category: "Short Film",
-    year: 2023,
-    duration: "15 minutes",
-    director: "Self-directed",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80",
-      "https://images.unsplash.com/photo-1492551557933-34265f7af79e?w=1200&q=80",
-      "https://images.unsplash.com/photo-1500210600161-5db1a5c0e3d0?w=1200&q=80",
-    ],
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    role: "Director, Editor",
-  },
+  project = getProjectDetailById("1"),
   isOpen = true,
   onClose = () => {},
 }: ProjectDetailProps) => {

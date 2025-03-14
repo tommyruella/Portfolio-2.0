@@ -1,19 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-
-export interface Project {
-  id: string;
-  title: string;
-  category: string;
-  year: number;
-  thumbnail: string;
-  description: string;
-  tags: string[];
-}
+import { ProjectCardType } from "../lib/projectsData";
 
 interface ProjectCardProps {
-  project: Project;
-  onClick?: (project: Project) => void;
+  project: ProjectCardType;
+  onClick?: (project: ProjectCardType) => void;
 }
 
 const ProjectCard = ({

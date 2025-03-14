@@ -190,6 +190,41 @@ export const projectsData: Project[] = [
   },
 ];
 
+// Type definitions for component-specific project formats
+export interface FeaturedProjectType {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  thumbnail: string;
+  featured: boolean;
+}
+
+export interface ProjectCardType {
+  id: string;
+  title: string;
+  category: string;
+  year: number;
+  thumbnail: string;
+  description: string;
+  tags: string[];
+}
+
+export interface ProjectDetailType {
+  id: string;
+  title: string;
+  description: string;
+  longDescription?: string;
+  category: string;
+  year: number;
+  duration?: string;
+  director?: string;
+  thumbnailUrl: string;
+  images: string[];
+  videoUrl?: string;
+  role?: string;
+}
+
 // Helper functions for working with project data
 export const getFeaturedProjects = (): Project[] => {
   return projectsData.filter((project) => project.isFeatured);
@@ -215,6 +250,56 @@ export const getAllCategories = (): string[] => {
 export const getAllYears = (): number[] => {
   const years = new Set(projectsData.map((project) => project.year));
   return Array.from(years).sort((a, b) => b - a); // Sort descending
+};
+
+// Adapter functions to convert between different project formats
+export const getProjectsForFeaturedSection = (): FeaturedProjectType[] => {
+  return projectsData
+    .filter((project) => project.isFeatured)
+    .map((project) => ({
+      id: project.id,
+      title: project.title,
+      category: project.category,
+      description: project.description,
+      thumbnail: project.thumbnailUrl,
+      featured: project.isFeatured,
+    }));
+};
+
+export const getProjectsForGallery = (): ProjectCardType[] => {
+  return projectsData.map((project) => ({
+    id: project.id,
+    title: project.title,
+    category: project.category,
+    year: project.year,
+    thumbnail: project.thumbnailUrl,
+    description: project.shortDescription,
+    tags: project.techniques || [],
+  }));
+};
+
+export const getProjectDetailById = (
+  id: string,
+): ProjectDetailType | undefined => {
+  const project = projectsData.find((p) => p.id === id);
+  if (!project) return undefined;
+
+  return {
+    id: project.id,
+    title: project.title,
+    description: project.shortDescription,
+    longDescription: project.description,
+    category: project.category,
+    year: project.year,
+    duration: "15 minutes", // This could be added to the Project type if needed
+    director: project.collaborators
+      ? project.collaborators[0]
+      : "Self-directed",
+    thumbnailUrl: project.thumbnailUrl,
+    images: project.images,
+    videoUrl: project.videoEmbedUrl,
+    role: "Director, Cinematographer", // This could be added to the Project type if needed
+  };
 };
 
 export default projectsData;

@@ -2,53 +2,17 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-interface Project {
-  id: string;
-  title: string;
-  category: string;
-  description: string;
-  thumbnail: string;
-  featured: boolean;
-}
+import {
+  FeaturedProjectType,
+  getProjectsForFeaturedSection,
+} from "../lib/projectsData";
 
 interface FeaturedProjectsProps {
-  projects?: Project[];
+  projects?: FeaturedProjectType[];
 }
 
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({
-  projects = [
-    {
-      id: "1",
-      title: "Urban Solitude",
-      category: "Short Film",
-      description:
-        "A contemplative exploration of isolation in modern cities, following a young artist navigating through crowded spaces while feeling completely alone.",
-      thumbnail:
-        "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200&q=80",
-      featured: true,
-    },
-    {
-      id: "2",
-      title: "Echoes of Time",
-      category: "Documentary",
-      description:
-        "An intimate portrait of elderly craftspeople preserving traditional techniques in a rapidly modernizing world.",
-      thumbnail:
-        "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80",
-      featured: true,
-    },
-    {
-      id: "3",
-      title: "Chromatic Dreams",
-      category: "Experimental",
-      description:
-        "A visually stunning exploration of color psychology and how different hues affect human emotion and perception.",
-      thumbnail:
-        "https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=1200&q=80",
-      featured: true,
-    },
-  ],
+  projects = getProjectsForFeaturedSection(),
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);

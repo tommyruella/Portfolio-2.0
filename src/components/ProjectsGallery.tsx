@@ -4,94 +4,27 @@ import ProjectDetail from "./ProjectDetail";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { Input } from "./ui/input";
-
-export interface Project {
-  id: string;
-  title: string;
-  category: string;
-  year: number;
-  thumbnail: string;
-  description: string;
-  tags: string[];
-}
+import {
+  ProjectCardType,
+  getProjectsForGallery,
+  getProjectDetailById,
+} from "../lib/projectsData";
 
 interface ProjectsGalleryProps {
-  projects?: Project[];
+  projects?: ProjectCardType[];
   title?: string;
   description?: string;
 }
 
 const ProjectsGallery = ({
-  projects = [
-    {
-      id: "1",
-      title: "The Silent Echo",
-      category: "Short Film",
-      year: 2023,
-      thumbnail:
-        "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80",
-      description: "A short film exploring themes of isolation and connection",
-      tags: ["Drama", "Experimental"],
-    },
-    {
-      id: "2",
-      title: "Urban Rhythms",
-      category: "Documentary",
-      year: 2022,
-      thumbnail:
-        "https://images.unsplash.com/photo-1492551557933-34265f7af79e?w=1200&q=80",
-      description:
-        "A documentary capturing the pulse of city life through visual storytelling",
-      tags: ["Urban", "Social"],
-    },
-    {
-      id: "3",
-      title: "Fragments of Memory",
-      category: "Experimental",
-      year: 2023,
-      thumbnail:
-        "https://images.unsplash.com/photo-1500210600161-5db1a5c0e3d0?w=1200&q=80",
-      description:
-        "An experimental piece exploring the nature of memory and perception",
-      tags: ["Abstract", "Psychological"],
-    },
-    {
-      id: "4",
-      title: "The Last Summer",
-      category: "Short Film",
-      year: 2021,
-      thumbnail:
-        "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1200&q=80",
-      description: "A coming-of-age story about friendship and change",
-      tags: ["Drama", "Youth"],
-    },
-    {
-      id: "5",
-      title: "Neon Dreams",
-      category: "Animation",
-      year: 2022,
-      thumbnail:
-        "https://images.unsplash.com/photo-1569878766010-17bff0a1987d?w=1200&q=80",
-      description: "An animated short exploring a futuristic cityscape",
-      tags: ["Sci-Fi", "Digital"],
-    },
-    {
-      id: "6",
-      title: "Wilderness",
-      category: "Documentary",
-      year: 2021,
-      thumbnail:
-        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80",
-      description:
-        "A nature documentary following wildlife in untouched landscapes",
-      tags: ["Nature", "Environmental"],
-    },
-  ],
+  projects = getProjectsForGallery(),
   title = "Projects Gallery",
   description = "Explore my complete portfolio of film and video projects",
 }: ProjectsGalleryProps) => {
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [filteredProjects, setFilteredProjects] =
+    useState<ProjectCardType[]>(projects);
+  const [selectedProject, setSelectedProject] =
+    useState<ProjectCardType | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -130,7 +63,7 @@ const ProjectsGallery = ({
     setFilteredProjects(filtered);
   };
 
-  const handleProjectClick = (project: Project) => {
+  const handleProjectClick = (project: ProjectCardType) => {
     setSelectedProject(project);
     setIsDetailOpen(true);
   };
@@ -239,24 +172,7 @@ const ProjectsGallery = ({
 
         {selectedProject && (
           <ProjectDetail
-            project={{
-              id: selectedProject.id,
-              title: selectedProject.title,
-              description: selectedProject.description,
-              longDescription: `${selectedProject.description} This is an extended description of the project that provides more context and details about the creative process, challenges, and outcomes.`,
-              category: selectedProject.category,
-              year: selectedProject.year,
-              duration: "15 minutes",
-              director: "Self-directed",
-              thumbnailUrl: selectedProject.thumbnail,
-              images: [
-                selectedProject.thumbnail,
-                "https://images.unsplash.com/photo-1492551557933-34265f7af79e?w=1200&q=80",
-                "https://images.unsplash.com/photo-1500210600161-5db1a5c0e3d0?w=1200&q=80",
-              ],
-              videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-              role: "Director, Cinematographer",
-            }}
+            project={getProjectDetailById(selectedProject.id)}
             isOpen={isDetailOpen}
             onClose={handleCloseDetail}
           />
