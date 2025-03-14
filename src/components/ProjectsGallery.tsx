@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import ProjectCard from "./ProjectCard";
 import ProjectDetail from "./ProjectDetail";
-import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { Input } from "./ui/input";
+import { motion } from "framer-motion";
 import {
   ProjectCardType,
   getProjectsForGallery,
@@ -28,6 +28,9 @@ const ProjectsGallery = ({
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filterRef = useRef<HTMLDivElement>(null);
 
   // Get unique categories
   const categories = Array.from(new Set(projects.map((p) => p.category)));
@@ -72,111 +75,124 @@ const ProjectsGallery = ({
     setIsDetailOpen(false);
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
   };
 
   return (
-    <div className="w-full bg-white py-32 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+    <div className="w-full bg-white py-24 px-6 md:px-12 lg:px-24 overflow-hidden">
+      <div className="max-w-screen-2xl mx-auto">
+        <motion.div
+          className="mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-light text-black mb-4 tracking-tight">
             {title}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mb-12 font-light">
             {description}
           </p>
-        </div>
 
-        {/* Minimal search and filter */}
-        <div className="mb-16 flex flex-col items-center">
-          <div className="relative w-full max-w-md mb-8">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search projects..."
-              value={searchQuery}
-              onChange={handleSearch}
-              className="pl-10 border-none bg-gray-50 h-12 rounded-full"
+          {/* Search and filter */}
+          <div className="mb-12">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="relative w-full max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search projects..."
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  className="pl-10 border border-gray-200 bg-white h-10 text-sm font-light"
+                />
+              </div>
+
+              <button
+                onClick={toggleFilters}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                <Filter className="h-4 w-4" />
+                <span className="text-sm font-light">Filters</span>
+              </button>
+            </div>
+
+            {/* Category filters */}
+            <motion.div
+              ref={filterRef}
+              className="overflow-hidden"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{
+                height: showFilters ? "auto" : 0,
+                opacity: showFilters ? 1 : 0,
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex flex-wrap gap-3 py-4 border-t border-b border-gray-100">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => handleCategoryClick(category)}
+                    className={`px-4 py-2 text-sm font-light rounded-full transition-colors ${activeCategory === category ? "bg-indigo-100 text-indigo-800" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                  >
+                    {category}
+                  </button>
+                ))}
+                {activeCategory && (
+                  <button
+                    onClick={() => {
+                      setActiveCategory(null);
+                      filterProjects(searchQuery, null);
+                    }}
+                    className="px-4 py-2 text-sm font-light rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                  >
+                    Clear filter
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </div>
+
+          {filteredProjects.length === 0 ? (
+            <div className="py-16 text-center">
+              <p className="text-gray-500 text-lg mb-2 font-light">
+                No projects match your search.
+              </p>
+              <p className="text-gray-400 text-sm font-light">
+                Try adjusting your criteria.
+              </p>
+            </div>
+          ) : (
+            <div>
+              {/* Projects grid - larger cards with more focus on images */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12 md:gap-16">
+                {filteredProjects.map((project, index) => (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                  >
+                    <ProjectCard
+                      project={project}
+                      onClick={handleProjectClick}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {selectedProject && (
+            <ProjectDetail
+              project={getProjectDetailById(selectedProject.id)}
+              isOpen={isDetailOpen}
+              onClose={handleCloseDetail}
             />
-          </div>
-
-          {/* Simple category pills */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategoryClick(category)}
-                className={`px-4 py-2 rounded-full text-sm transition-colors ${
-                  activeCategory === category
-                    ? "bg-black text-white"
-                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-            {activeCategory && (
-              <button
-                onClick={() => {
-                  setActiveCategory(null);
-                  filterProjects(searchQuery, null);
-                }}
-                className="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </div>
-
-        {filteredProjects.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">
-              No projects match your search.
-            </p>
-            <p className="text-gray-400">Try adjusting your criteria.</p>
-          </div>
-        ) : (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-12"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {filteredProjects.map((project) => (
-              <motion.div key={project.id} variants={itemVariants}>
-                <ProjectCard project={project} onClick={handleProjectClick} />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-
-        {selectedProject && (
-          <ProjectDetail
-            project={getProjectDetailById(selectedProject.id)}
-            isOpen={isDetailOpen}
-            onClose={handleCloseDetail}
-          />
-        )}
+          )}
+        </motion.div>
       </div>
     </div>
   );

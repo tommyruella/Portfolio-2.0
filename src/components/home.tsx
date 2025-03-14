@@ -1,169 +1,174 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import Navbar from "./Navbar";
 import ProjectsGallery from "./ProjectsGallery";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import projectsData from "../lib/projectsData";
+import { getFeaturedProjects } from "../lib/projectsData";
+import { motion, useScroll, useTransform } from "framer-motion";
+import CustomCursor from "./CustomCursor";
+import ParallaxImage from "./ParallaxImage";
+import ScrollIndicator from "./ScrollIndicator";
 
 const Home: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const featuredProjects = projectsData.filter((project) => project.isFeatured);
+  const featuredProjects = getFeaturedProjects();
+  const projectsRef = useRef<HTMLDivElement>(null);
 
-  // Auto-advance slideshow
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % featuredProjects.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [featuredProjects.length]);
-
-  // Animation variants for staggered section appearance
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
+  const scrollToProjects = () => {
+    projectsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Custom cursor */}
+      <CustomCursor color="#6366f1" />
+
       {/* Navigation */}
       <Navbar studentName="Alex Filmmaker" />
 
-      {/* Hero Section with Slideshow */}
-      <motion.section
-        className="h-screen flex items-center justify-center relative overflow-hidden"
-        initial="hidden"
-        animate="visible"
-        variants={sectionVariants}
-      >
-        {/* Slideshow Background */}
-        <div className="absolute inset-0 z-0">
-          {featuredProjects.map((project, index) => (
-            <div
-              key={project.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
-            >
-              <img
-                src={project.thumbnailUrl}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/50" />
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center relative z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6">
+      {/* Hero Section - Full screen carousel */}
+      <section className="h-screen w-full relative overflow-hidden">
+        <div className="absolute inset-0 z-10 flex flex-col justify-center items-center px-6 text-center">
+          <motion.h1
+            className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-white mb-8 drop-shadow-lg max-w-4xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Cinematic Storytelling
-          </h1>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
-            Exploring narratives through the lens of visual composition, light,
-            and movement.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <a
-              href="#projects"
-              className="px-6 py-3 bg-white text-black rounded-md hover:bg-white/90 transition-colors"
-            >
-              View Projects
-            </a>
-            <Link
-              to="/about"
-              className="px-6 py-3 border border-white text-white rounded-md hover:bg-white/10 transition-colors"
-            >
-              About Me
-            </Link>
-          </div>
+          </motion.h1>
 
-          {/* Slideshow Indicators */}
-          <div className="flex justify-center mt-8 space-x-2">
-            {featuredProjects.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all ${index === currentSlide ? "bg-white w-4" : "bg-white/50"}`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+          <motion.div
+            className="absolute bottom-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            onClick={scrollToProjects}
+          >
+            <ScrollIndicator text="Scroll to explore projects" />
+          </motion.div>
         </div>
-      </motion.section>
+
+        {/* Background image with parallax effect */}
+        <div className="absolute inset-0 z-0">
+          <ParallaxImage
+            src={featuredProjects[0].thumbnailUrl.replace(
+              "w=800&q=80",
+              "w=1920&q=90",
+            )}
+            alt="Featured work"
+            speed={0.3}
+            priority={true}
+            className="h-full"
+          />
+          <div className="absolute inset-0 bg-black/30 z-10" />
+        </div>
+      </section>
 
       {/* Projects Gallery Section */}
-      <motion.div
-        id="projects"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={sectionVariants}
-      >
+      <div id="projects" ref={projectsRef} className="pt-24 md:pt-32">
         <ProjectsGallery
           title="Portfolio"
           description="Curated selection of cinematic works"
         />
-      </motion.div>
+      </div>
 
-      {/* About Section Link */}
-      <motion.div
-        className="py-24 text-center bg-black text-white"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={sectionVariants}
-      >
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-6">The Story Behind the Lens</h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
-            Discover my creative journey, influences, and vision for visual
-            storytelling.
-          </p>
-          <Link
-            to="/about"
-            className="px-8 py-4 border border-white text-white rounded-md hover:bg-white hover:text-black transition-all duration-300 inline-flex items-center gap-2 text-lg"
-          >
-            About Me
-          </Link>
+      {/* About Section Link - with parallax */}
+      <div className="py-32 md:py-40 px-6 md:px-12 lg:px-24 max-w-screen-2xl mx-auto relative overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center relative z-10">
+          <div>
+            <motion.h2
+              className="text-3xl md:text-4xl font-light mb-6 text-white drop-shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              The Story Behind the Lens
+            </motion.h2>
+            <motion.p
+              className="text-lg text-gray-200 max-w-md mb-12 font-light leading-relaxed drop-shadow-md"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              Discover my creative journey, influences, and vision for visual
+              storytelling.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <Link
+                to="/about"
+                className="text-white border-b border-white pb-1 hover:text-gray-200 transition-colors"
+              >
+                About Me
+              </Link>
+            </motion.div>
+          </div>
+          <div className="aspect-[4/3] w-full overflow-hidden">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="h-full w-full"
+            >
+              <img
+                src="https://images.unsplash.com/photo-1605699263428-aaf61a2c1b7f?w=1200&q=90"
+                alt="Behind the scenes"
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+          </div>
         </div>
-      </motion.div>
+
+        {/* Background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/80 to-purple-900/60 z-0" />
+      </div>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-12 px-4">
-        <div className="max-w-6xl mx-auto">
+      <footer className="py-12 px-6 md:px-12 lg:px-24 border-t border-gray-200 bg-white">
+        <div className="max-w-screen-2xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">Alex Filmmaker</h3>
-              <p className="text-gray-400">
+              <h3 className="text-lg font-light mb-4">Alex Filmmaker</h3>
+              <p className="text-gray-500 font-light">
                 Creating visual stories that resonate and inspire.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Contact</h3>
-              <p className="text-gray-400 mb-2">email@example.com</p>
-              <p className="text-gray-400">Los Angeles, CA</p>
+              <h3 className="text-lg font-light mb-4">Contact</h3>
+              <p className="text-gray-500 font-light mb-2">email@example.com</p>
+              <p className="text-gray-500 font-light">Los Angeles, CA</p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Connect</h3>
-              <div className="flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-white">
+              <h3 className="text-lg font-light mb-4">Connect</h3>
+              <div className="flex space-x-8">
+                <a
+                  href="#"
+                  className="text-gray-500 hover:text-black transition-colors font-light"
+                >
                   Instagram
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white">
+                <a
+                  href="#"
+                  className="text-gray-500 hover:text-black transition-colors font-light"
+                >
                   Vimeo
                 </a>
-                <Link to="/about" className="text-gray-400 hover:text-white">
+                <Link
+                  to="/about"
+                  className="text-gray-500 hover:text-black transition-colors font-light"
+                >
                   About
                 </Link>
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+          <div className="border-t border-gray-200 mt-12 pt-12 text-center text-gray-400 text-sm font-light">
             <p>
               © {new Date().getFullYear()} Alex Filmmaker. All rights reserved.
             </p>
